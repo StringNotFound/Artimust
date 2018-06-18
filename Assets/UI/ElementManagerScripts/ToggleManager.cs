@@ -12,6 +12,7 @@ public class ToggleManager : ElementManager {
 	// Use this for initialization
 	void Awake () {
         toggle = this.GetComponent<Toggle>();
+        toggle.onValueChanged.AddListener(OnValueChanged);
 	}
 
     public bool GetValue()
@@ -24,9 +25,18 @@ public class ToggleManager : ElementManager {
         toggle.isOn = val;
     }
 
-    public void RegisterChangeHandler(UnityAction<bool> changeHandler)
+    private void OnValueChanged(bool newVal)
     {
-        toggle.onValueChanged.AddListener(changeHandler);
+        Debug.Log("Toggle value changed");
+        if (Time.frameCount == lastFrameDeselected)
+        {
+            // the user just released the mouse, changing the value of this object (rather
+            // than a script just having changed the value of this object)
+            Debug.Log("User change!");
+            Debug.Log(toggle.isOn);
+            lastFrameDeselected = -1;
+            ActivateOnUserChangedValueEvent();
+        }
     }
 
 }

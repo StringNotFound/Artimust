@@ -22,11 +22,4 @@ public abstract class GUI : MonoBehaviour {
     // the event handlers
     public void HandleTestEvent(int var1, float var2) { }
 
-    /*
-     * called whenever the corresponding ship values change; the GUI should update
-     * if it contains these values
-     */
-    public virtual void OnValChanged() { }
-    public virtual void OnBoolChanged() { }
-
 }

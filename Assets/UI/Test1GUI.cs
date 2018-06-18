@@ -6,29 +6,25 @@ using UnityEngine.Events;
 
 public class Test1GUI : GUI {
 
-    public Slider val1Slider;
-    public Slider val2Slider;
-    public Toggle boolToggle;
+    public SliderManager val1Slider;
+    public SliderManager val2Slider;
+    public ToggleManager boolToggle;
 
     public void Start()
     {
-        val1Slider.onValueChanged.AddListener(delegate { Val1SliderChanged(); });
-        val2Slider.onValueChanged.AddListener(delegate { Val2SliderChanged(); });
-        boolToggle.onValueChanged.AddListener(delegate { Bool1Changed(); });
+        val1Slider.OnUserChangedValue += Val1SliderChanged;
+        val2Slider.OnUserChangedValue += Val2SliderChanged;
+        boolToggle.OnUserChangedValue += Bool1UserChanged;
     }
 
-    // these are called when the ship's syncvar's change
-    public override void OnBoolChanged()
+    public void Update()
     {
-        Debug.Log("Changing GUI toggle to " + ship.testBool);
-        boolToggle.isOn = ship.testBool;
-    }
-
-    public override void OnValChanged()
-    {
-        Debug.Log("New val1 slider value: " + ship.testVal1);
-        val1Slider.value = ship.testVal1;
-        val2Slider.value = ship.testVal2;
+        if (!boolToggle.IsActivelySelected())
+            boolToggle.SetValue(ship.testBool);
+        if (!val1Slider.IsActivelySelected())
+            val1Slider.SetValue(ship.testVal1);
+        if (!val2Slider.IsActivelySelected())
+            val2Slider.SetValue(ship.testVal2);
     }
 
     // these are called when the values of the GUI objects change
@@ -37,18 +33,17 @@ public class Test1GUI : GUI {
         // only update when we need to (this method is also called when a script
         // updates the value of the slider (i.e., OnValChanged)
         //if ((int) val1Slider.value != ship.testVal1)
-            pim.CmdChangeTestVal1((int) val1Slider.value);
+            pim.CmdChangeTestVal1((int)val1Slider.GetValue());
     }
 
     public void Val2SliderChanged()
     {
         //if ((int) val2Slider.value != ship.testVal2)
-            pim.CmdChangeTestVal2((int) val2Slider.value);
+            pim.CmdChangeTestVal2((int)val2Slider.GetValue());
     }
 
-    public void Bool1Changed()
+    public void Bool1UserChanged()
     {
-        //if (boolToggle.isOn != ship.testBool)
-            pim.CmdChangeTestBool(boolToggle.isOn);
+        pim.CmdChangeTestBool(boolToggle.GetValue());
     }
 }

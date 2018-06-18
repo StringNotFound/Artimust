@@ -49,6 +49,7 @@ public class PlayerInterfaceManager : NetworkBehaviour {
 		
 	}
 
+    // changes the currently active GUI
     public void ChangeCurrentGUI()
     {
 
@@ -58,18 +59,6 @@ public class PlayerInterfaceManager : NetworkBehaviour {
     public void HandleTestEvent(int var1, float var2)
     {
         currentGUI.HandleTestEvent(var1, var2);
-    }
-
-    // called by the ShipManager when either val changes
-    public void OnValChanged()
-    {
-        currentGUI.OnValChanged();
-    }
-
-    // called by the ShipManager when bool changes
-    public void OnBoolChanged()
-    {
-        currentGUI.OnBoolChanged();
     }
 
     [Command]
