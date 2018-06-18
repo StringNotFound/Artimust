@@ -9,12 +9,14 @@ public class Test1GUI : GUI {
     public SliderManager val1Slider;
     public SliderManager val2Slider;
     public ToggleManager boolToggle;
+    public Button forwardButton;
 
     public void Start()
     {
         val1Slider.OnUserChangedValue += Val1SliderChanged;
         val2Slider.OnUserChangedValue += Val2SliderChanged;
         boolToggle.OnUserChangedValue += Bool1UserChanged;
+        forwardButton.onClick.AddListener(GoForward);
     }
 
     public void Update()
@@ -25,6 +27,11 @@ public class Test1GUI : GUI {
             val1Slider.SetValue(ship.testVal1);
         if (!val2Slider.IsActivelySelected())
             val2Slider.SetValue(ship.testVal2);
+    }
+
+    public void GoForward()
+    {
+        pim.ChangeCurrentGUI("TestGUI2");
     }
 
     // these are called when the values of the GUI objects change

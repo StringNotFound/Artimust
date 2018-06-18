@@ -7,6 +7,8 @@ public abstract class GUI : MonoBehaviour {
     public ShipManager ship;
     public PlayerInterfaceManager pim;
 
+    public string panelname;
+
     // bring the GUI onto the screen
     public void Activate()
     {

@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 public class PlayerInterfaceManager : NetworkBehaviour {
 
     public ShipManager ship;
+
     public GUI[] GUIs;
     public GUI currentGUI;
 
@@ -50,9 +51,21 @@ public class PlayerInterfaceManager : NetworkBehaviour {
 	}
 
     // changes the currently active GUI
-    public void ChangeCurrentGUI()
+    public void ChangeCurrentGUI(string name)
     {
-
+        for (int i = 0; i < GUIs.Length; i++)
+        {
+            if (GUIs[i].panelname == name)
+            {
+                currentGUI.Deactivate();
+                currentGUI = GUIs[i];
+                currentGUI.ship = ship;
+                currentGUI.pim = this;
+                currentGUI.Activate();
+                return;
+            }
+        }
+        Debug.LogError("Invalid name \"" + name + "\" specified for ChangeCurrentGUI");
     }
 
     // the event handlers (they should mostly just call the GUI's event handlers)
