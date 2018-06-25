@@ -15,7 +15,7 @@ public class Test2GUI : GUI {
 
     public void GoBack()
     {
-        pim.ChangeCurrentGUI("TestGUI1");
+        pim.ChangeCurrentGUI("GUI 1");
     }
 
 }

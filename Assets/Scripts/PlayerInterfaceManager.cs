@@ -55,7 +55,7 @@ public class PlayerInterfaceManager : NetworkBehaviour {
     {
         for (int i = 0; i < GUIs.Length; i++)
         {
-            if (GUIs[i].panelname == name)
+            if (GUIs[i].name == name)
             {
                 currentGUI.Deactivate();
                 currentGUI = GUIs[i];

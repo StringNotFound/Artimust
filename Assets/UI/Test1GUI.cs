@@ -31,7 +31,7 @@ public class Test1GUI : GUI {
 
     public void GoForward()
     {
-        pim.ChangeCurrentGUI("TestGUI2");
+        pim.ChangeCurrentGUI("GUI 2");
     }
 
     // these are called when the values of the GUI objects change
