@@ -11,7 +11,11 @@ public class TerminalManager : ElementManager {
 
     private const string prompt = "shell> ";
     private string history = prompt;
-    public string buffer;
+    private string buffer;
+
+    // used for the up arrow
+    private List<string> previousCommands;
+    private int currentCommand = 0;
 
     private float lastBackspaceEvent = 0f;
     public float backspaceDelay = 0.005f;
@@ -23,6 +27,7 @@ public class TerminalManager : ElementManager {
 	// Use this for initialization
 	void Awake () {
         shellText.text = history;
+        previousCommands = new List<string>();
 	}
 
     private void Update()
@@ -52,8 +57,35 @@ public class TerminalManager : ElementManager {
                 {
                     case KeyCode.Return:
                     case KeyCode.KeypadEnter:
+                        if (buffer != "")
+                        {
+                            previousCommands.Add(buffer);
+                            currentCommand = previousCommands.Count;
+                        }
                         SignalExecuteCommand();
-                        buffer = "";
+                        return;
+                    case KeyCode.UpArrow:
+                        // if we've gone back as far as we can go
+                        if (currentCommand == 0)
+                            return;
+
+                        // otherwise we lookup the corresponding command
+                        currentCommand--;
+                        buffer = previousCommands[currentCommand];
+                        shellText.text = history + buffer;
+                        return;
+                    case KeyCode.DownArrow:
+                        if (currentCommand + 1 >= previousCommands.Count)
+                        {
+                            currentCommand = previousCommands.Count;
+                            buffer = "";
+                            shellText.text = history + buffer;
+                            return;
+                        }
+
+                        currentCommand++;
+                        buffer = previousCommands[currentCommand];
+                        shellText.text = history + buffer;
                         return;
                     default:
                         string input_str = vKey.ToString();
@@ -287,6 +319,10 @@ public class TerminalManager : ElementManager {
      * This function triggers the event which causes the current command to be handled
      * in ExecuteCurrentCommand in the TerminalGUI. We handle it there rather than here
      * because it has referenced to the PIM and ship, which certain commands need.
+     * 
+     * Note that this function does not clear the buffer. The handler must call GetBuffer to get
+     * the buffer, but the buffer isn't cleared until the result of the command is displayed to
+     * the terminal
      */
     private void SignalExecuteCommand()
     {
