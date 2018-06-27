@@ -8,6 +8,7 @@ using UnityEngine.EventSystems;
 public class TerminalManager : ElementManager {
 
     public Scrollbar scrollbar;
+    private int framesTilResetScrollbar;
 
     private const string prompt = "shell> ";
     private string history = prompt;
@@ -18,7 +19,7 @@ public class TerminalManager : ElementManager {
     private int currentCommand = 0;
 
     private float lastBackspaceEvent = 0f;
-    public float backspaceDelay = 0.005f;
+    public float backspaceDelay = 0.1f;
 
     public Text shellText;
 
@@ -32,6 +33,14 @@ public class TerminalManager : ElementManager {
 
     private void Update()
     {
+        if (framesTilResetScrollbar > 0)
+        {
+            framesTilResetScrollbar--;
+            if (framesTilResetScrollbar == 0)
+            {
+                scrollbar.value = 0;
+            }
+        }
         foreach (KeyCode vKey in System.Enum.GetValues(typeof(KeyCode)))
         {
             // don't read in any value if we've frozen the input
@@ -63,6 +72,7 @@ public class TerminalManager : ElementManager {
                             currentCommand = previousCommands.Count;
                         }
                         SignalExecuteCommand();
+                        UpdateText();
                         return;
                     case KeyCode.UpArrow:
                         // if we've gone back as far as we can go
@@ -72,7 +82,7 @@ public class TerminalManager : ElementManager {
                         // otherwise we lookup the corresponding command
                         currentCommand--;
                         buffer = previousCommands[currentCommand];
-                        shellText.text = history + buffer;
+                        UpdateText();
                         return;
                     case KeyCode.DownArrow:
                         if (currentCommand + 1 >= previousCommands.Count)
@@ -85,7 +95,7 @@ public class TerminalManager : ElementManager {
 
                         currentCommand++;
                         buffer = previousCommands[currentCommand];
-                        shellText.text = history + buffer;
+                        UpdateText();
                         return;
                     default:
                         string input_str = vKey.ToString();
@@ -286,7 +296,7 @@ public class TerminalManager : ElementManager {
                         buffer = buffer + input_str;
                         break;
                 }
-                shellText.text = history + buffer;
+                UpdateText();
             }
         }
 
@@ -297,13 +307,6 @@ public class TerminalManager : ElementManager {
         return buffer;
     }
 
-    // this should only be called from ExecuteCurrentCommand
-    public void Clear()
-    {
-        buffer = "";
-        history = "";
-    }
-
     public void DisplayCommandResult(string res)
     {
         if (res == "")
@@ -311,7 +314,7 @@ public class TerminalManager : ElementManager {
         else
             history = history + buffer + '\n' + res + '\n' + prompt;
         buffer = "";
-        shellText.text = history + buffer;
+        UpdateText();
         freeze_input = false;
     }
 
@@ -326,8 +329,20 @@ public class TerminalManager : ElementManager {
      */
     private void SignalExecuteCommand()
     {
-        freeze_input = true;
-        this.ActivateOnUserChangedValueEvent();
+        if (buffer.StartsWith("clear ") || buffer == "clear")
+        {
+            history = prompt;
+            buffer = "";
+            UpdateText();
+        } else {
+            freeze_input = true;
+            this.ActivateOnUserChangedValueEvent();
+        }
     }
 
+    private void UpdateText()
+    {
+        shellText.text = history + buffer;
+        framesTilResetScrollbar = 2;
+    }
 }

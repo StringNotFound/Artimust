@@ -25,10 +25,6 @@ public class TerminalGUI : GUI {
             case "":
                 res = "";
                 break;
-            case "clear":
-                terminal.Clear();
-                res = "";
-                break;
         }
         terminal.DisplayCommandResult(res);
     }
